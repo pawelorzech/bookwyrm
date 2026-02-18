@@ -7,7 +7,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       retries: 5
-      start_period: 5s
+      start_period: 10s
       timeout: 10s
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -23,10 +23,10 @@ services:
       - exports_volume:/app/exports
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000"]
-      interval: 3s
-      timeout: 1s
-      start_period: 3s
-      retries: 25
+      interval: 15s
+      timeout: 10s
+      start_period: 120s
+      retries: 20
     depends_on:
       db:
         condition: service_healthy
@@ -60,10 +60,10 @@ services:
     command: celery -A celerywyrm worker -l info -Q high_priority,medium_priority,low_priority,streams,images,suggested_users,email,connectors,lists,inbox,imports,import_triggered,broadcast,misc
     healthcheck:
       test: celery -A celerywyrm status
-      interval: 10s
-      timeout: 10s
-      start_period: 2s
-      retries: 6
+      interval: 30s
+      timeout: 15s
+      start_period: 60s
+      retries: 10
     volumes:
       - static_volume:/app/static
       - media_volume:/app/images
@@ -84,10 +84,10 @@ services:
     command: celery -A celerywyrm beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     healthcheck:
       test: celery -A celerywyrm status
-      interval: 10s
-      timeout: 10s
-      retries: 6
-      start_period: 2s
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 60s
     volumes:
       - static_volume:/app/static
       - media_volume:/app/images
