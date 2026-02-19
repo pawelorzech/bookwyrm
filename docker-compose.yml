@@ -17,6 +17,8 @@ services:
     build: .
     env_file: .env
     command: gunicorn bookwyrm.wsgi:application
+    expose:
+      - "8000"
     volumes:
       - static_volume:/app/static
       - media_volume:/app/images
@@ -34,6 +36,8 @@ services:
         condition: service_started
     networks:
       - main
+    labels:
+      - "traefik.http.services.web.loadbalancer.server.port=8000"
   redis_activity:
     image: redis:7.2.1
     command: redis-server --requirepass ${REDIS_ACTIVITY_PASSWORD} --appendonly yes --port ${REDIS_ACTIVITY_PORT}
